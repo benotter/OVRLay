@@ -22,7 +22,33 @@ It provides the neccassary OpenVR API's, Plugins, and Unity Prefabs to enable a 
 
 - Has drop-in support for interaction with unmodified UnityUI, by simulating mouse screen cords via a in-scene camera! (Just make sure to position camera to look at WorldSpace UI!)
 
-Basic Usage (Non - Technical)
+If you have any Questions, Comments, Feedback, or find any bugs, Please Let me know!
+
+Download:
+===
+
+Grab the latest Unity Package from Releases, [found here!](https://github.com/benotter/OVRLay/releases)
+
+Then just import it into a new blank scene!
+
+REMEBER TO KEEP UNITY'S BUILT-IN VR SUPPORT OFF!
+
+THIS INCLUDES NO STEAMVR PLUGIN!
+
+The two plugins currently do not play nice when run together, so one or the other until I can get around to making a SteamVR plugin compatible version.
+
+
+Easy Usage (None - Technical)
+===
+
+Simply drag and drop and drop the Unity_Overlay Prefab in your scene, then set its Overlay Texture property to your texture to get the simplest basic Overlay the fastest! 
+
+For a quick dashboard, drag and drop the Dashboard Quickstart prefab to get an already rigged up UnityUI canvas with all the correct camera settings, and an Overlay set to be a dashboard type! Simply add UI to the canvas, and it should just work!
+
+Remeber to set the Overlay Name and Key to be Unique!
+
+---
+Moderate Usage (Kinda - Technical)
 ===
 The easiest method I've used, so far, is:
 
@@ -35,6 +61,7 @@ If you have 'Auto Update' enabled on both the Unity_SteamVR_Handler and Unity_Ov
 
 That should get you the most basic form of a working SteamVR Overlay, check out the code, settings, and experiment to get a basic feel for how it works!
 
+---
 Advanced Usage (Technical)
 ===
 
@@ -46,6 +73,9 @@ The **OVR_Handler** class found in it's folder/files, and **OVR_Overlay / OVR_Ov
 
 Specifically, the OVR_Overlay class is just an abstractor that 'contains' an overlay via keeping track of its handle, and using a bunch of getters/setters to translate API calls. Just makes dev a lot faster then constantly keeping track of and calling Overlay.GetSetMaOverlaysSetting(_MaHandle,_myValues, ref _StoredVals) style things all over the place, lol.
 
+---
 
+Thank you Valve, for OpenVR and Steam! (And Half Life 2!)
 
+<sup><sup>pls hire me volvo, u my oniy hope!</sup></sup>
 
