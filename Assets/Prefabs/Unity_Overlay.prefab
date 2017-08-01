@@ -51,17 +51,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 585696d8a97bfc347a4c14b5c0c35193, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoUpdateOverlay: 1
+  simulateInEditor: 0
   overlayName: Unity Overlay
   overlayKey: unity_overlay
-  overlayTexture: {fileID: 0}
-  cameraForTexture: {fileID: 0}
-  autoUpdateOverlay: 1
+  isDashboardOverlay: 0
+  onlyShowInDashboard: 0
   isVisible: 1
   highQuality: 0
+  lastVisible: 1
+  enableSimulatedMouse: 0
+  simulateUnityMouseInput: 0
+  canvasGraphicsCaster: {fileID: 0}
+  mouseScale: {x: 1, y: 1}
+  mousePos: {x: 0, y: 0}
+  mouseDown: 0
+  mouseDragging: 0
+  mouseDownTime: 0
+  overlayTexture: {fileID: 0}
+  cameraForTexture: {fileID: 0}
+  thumbnailTexture: {fileID: 0}
+  highQualityRenderTex: 1
+  cameraForTextureWidthOverride: 0
+  cameraForTextureHeightOverride: 0
   colorTint: {r: 1, g: 1, b: 1, a: 1}
   opacity: 1
   widthInMeters: 1
   deviceToTrack: 0
   customDeviceIndex: 0
-  enableSimulatedMouse: 0
-  mouseScale: {x: 1, y: 1}
+  steamVRHandlerPrefab: {fileID: 1453789531287198, guid: 78fc84ce601bcc442a58b4cc525615b6,
+    type: 2}
