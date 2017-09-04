@@ -1,4 +1,4 @@
-# OVRLay (1.0)
+# OVRLay (1.1)
 
 A(n)? (Hopefully) Easy-to-use toolkit for developing OpenVR Overlays with Unity Engine!
 
