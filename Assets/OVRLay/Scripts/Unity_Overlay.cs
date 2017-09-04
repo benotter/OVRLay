@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Valve.VR;
 
-[ExecuteInEditMode]
 public class Unity_Overlay : MonoBehaviour 
 {
 	public enum OverlayTrackedDevice 
@@ -18,113 +17,62 @@ public class Unity_Overlay : MonoBehaviour
 	}
 
 	[Space(10)]
-	[Header("Update Settings")]
-	[Space(10)]
-
-	public bool autoUpdateOverlay = true;
-	public bool simulateInEditor = false;
-
-	[Space(10)]
-	[Header("Overlay Settings")]
-	[Space(10)]
-
-
 	public string overlayName = "Unity Overlay";
 	public string overlayKey = "unity_overlay";
-
-	[Space(10)]
 
 	public bool isDashboardOverlay = false;
 	public bool onlyShowInDashboard = false;
 
 	[Space(10)]
 
-	public bool isVisible = true;
+	public bool simulateInEditor = false;
 
-	[Space(10)]
-
-	public bool highQuality = false;
-
-	[HideInInspector]
-	public bool lastVisible = false;
-	
-	[HideInInspector]
-	private bool isDashboardOpen = true;
-
-	[Space(10)]
-	[Header("Overlay Mouse Input Settings")]
-	[Space(10)]
-
-	public bool enableSimulatedMouse = false;
-	public bool simulateUnityMouseInput = false;
-	
-	[Space(10)]
-
-	public GraphicRaycaster canvasGraphicsCaster;
-
-	
-	[HideInInspector]
-	public Vector2 mouseScale = new Vector2(1f, 1f);
-
-	[HideInInspector]
-	public Vector2 mousePos = new Vector2();
-
-	[HideInInspector]
-	public bool mouseDown = false;
-
-	[HideInInspector]
-	public bool mouseDragging = false;
-
-	[HideInInspector]
-	public float mouseDownTime = 0f;
-	
-
-	[Space(10)]
-	[Header("Overlay Texture Settings")]
 	[Space(10)]
 
 	public Texture overlayTexture;
 	public Camera cameraForTexture;
+	public Texture thumbNailTexture;
 
 	[Space(10)]
-
-	public Texture thumbnailTexture;
-
-	[Space(10)]
-
 	public bool highQualityRenderTex = true;
-	public int cameraForTextureWidthOverride = 0;
-	public int cameraForTextureHeightOverride = 0;
+	public int renderTexWidthOverride = 0;
+	public int renderTexHeightOverride = 0;
+	
 
 	[Space(10)]
 
+	public bool autoUpdateOverlay = true;
+
+	[Space(10)]
+
+	public bool isVisible = true;
+	public bool highQuality = false;
 	public Color colorTint = Color.white;
 	[Range(0f, 1f)]
 	public float opacity = 1.0f;
 	public float widthInMeters = 1.0f;
 
-
 	[Space(10)]
-	[Header("Overlay Tracking Settings")]
-	[Space(10)]
-
 	public OverlayTrackedDevice deviceToTrack = OverlayTrackedDevice.None;
 	public uint customDeviceIndex = 0;
-
-	[Space(15)]
-	public GameObject steamVRHandlerPrefab;
-
-
-
-
-
 	
-	protected OVR_Handler ovrHandler = null;
-	protected OVR_Overlay overlay = null;
+	[Space(10)]
+	public bool enableSimulatedMouse = false;
+	public Vector2 mouseScale = new Vector2(1f, 1f);
+
+	[Space(10)]
+	public bool simulateUnityMouseInput = false;
+	public GraphicRaycaster canvasGraphicsCaster;
+
+
+	protected OVR_Handler ovrHandler = OVR_Handler.instance;
+	protected OVR_Overlay overlay = new OVR_Overlay();
 	
 	protected Unity_Overlay_Opts opts = new Unity_Overlay_Opts();
 
 	protected RenderTexture cameraTexture;
+
+	protected Texture _mainTex;
 
 	protected VRTextureBounds_t textureBounds = new VRTextureBounds_t();
 	protected HmdVector2_t mouseScale_t = new HmdVector2_t();
@@ -133,6 +81,12 @@ public class Unity_Overlay : MonoBehaviour
 	private HashSet<Selectable> enterTargets = new HashSet<Selectable>();
 	private HashSet<Selectable> downTargets = new HashSet<Selectable>();
 
+	public bool mouseDown = false;
+	public bool mouseDragging = false;
+	public float mouseDownTime = 0f;
+
+	public Vector2 mousePos = new Vector2();
+
 	protected Unity_Overlay_UI_Handler uiHandler = new Unity_Overlay_UI_Handler();
 
 	private float reverseAspect = 0f;
@@ -140,16 +94,60 @@ public class Unity_Overlay : MonoBehaviour
 	private bool useChapColor = false;
 	private Color lastColor = Color.black;
 
+	public bool lastVisible = false;
+
+
+	private bool isDashboardOpen = true;
+
+	// Some methods to make UI stuff easier
+	public void ToggleEnable()
+	{
+		gameObject.SetActive(!gameObject.activeSelf);
+	}
+
+	public void SetOpacity(float o)
+	{
+		opacity = o;
+	}
+
+	public void SetScale(float s)
+	{
+		widthInMeters = s;
+	}
+
+	public void SetToChaperoneColor(bool setToChapColor)
+	{
+		useChapColor = setToChapColor;
+	}
+	public void SetOnlyShowInDashboard(bool enble)
+	{
+		onlyShowInDashboard = enble;
+	}
+
+	// Event Callbac...Err... Delegates.
+	void OnVisChange(bool visible)
+	{
+		isVisible = visible;
+		Debug.Log("Is Visible: " + visible);
+	}
+
+	void OnDashBoardChange(bool open)
+	{
+		isDashboardOpen = open;
+		Debug.Log("Dashboard Open: " + open);
+	}
+
 	void Start () 
 	{
+		matrixConverter = new OVR_Utils.RigidTransform(transform);
+
 		if(cameraForTexture != null)
 		{
-			int width = cameraForTextureWidthOverride != 0 ? cameraForTextureWidthOverride : (int) (cameraForTexture.pixelWidth);
-			int height = cameraForTextureHeightOverride != 0 ? cameraForTextureHeightOverride : (int) (cameraForTexture.pixelHeight);
+			int width = renderTexWidthOverride != 0 ? renderTexWidthOverride : (int) (cameraForTexture.pixelWidth);
+			int height = renderTexHeightOverride != 0 ? renderTexHeightOverride : (int) (cameraForTexture.pixelHeight);
 
 			cameraForTexture.enabled = false;
 			cameraTexture = new RenderTexture(width, height, 24);
-			cameraTexture.name = "Overlay RenderTexture";
 
 			if(highQualityRenderTex)
 			{
@@ -161,49 +159,28 @@ public class Unity_Overlay : MonoBehaviour
 			overlayTexture = cameraTexture;
 		}
 
-		if(Application.isPlaying)
-		{
-			// Check for Unity_SteamVR_Handler
-			Unity_SteamVR_Handler[] handlers = FindObjectsOfType(typeof(Unity_SteamVR_Handler)) as Unity_SteamVR_Handler[];
-			if(handlers.Length < 1)
-				Instantiate(steamVRHandlerPrefab);
+		overlay.overlayTextureType = SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL") ? ETextureType.OpenGL : ETextureType.DirectX;
+		
+		overlay.overlayKey = overlayKey;
+		overlay.overlayName = overlayName;
 
-			ovrHandler = OVR_Handler.instance;
-			overlay = new OVR_Overlay();
-			
-			matrixConverter = new OVR_Utils.RigidTransform(transform);
+		if(isDashboardOverlay)
+			overlay.overlayIsDashboard = true;
 
-			overlay.overlayTextureType = SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL") ? ETextureType.OpenGL : ETextureType.DirectX;
-			
-			overlay.overlayKey = overlayKey;
-			overlay.overlayName = overlayName;
+		textureBounds.uMin = 0;
+		textureBounds.vMin = 1;
 
-			if(isDashboardOverlay)
-				overlay.overlayIsDashboard = true;
+		textureBounds.uMax = 1;
+		textureBounds.vMax = 0;
 
-			textureBounds.uMin = 0;
-			textureBounds.vMin = 1;
-
-			textureBounds.uMax = 1;
-			textureBounds.vMax = 0;
-
-			// Testing out some event based stuff
-			overlay.onVisibilityChange += OnVisChange;
-			ovrHandler.onDashboardChange += OnDashBoardChange;
-
-			if(canvasGraphicsCaster && cameraForTexture)
-			{
-				Canvas can = canvasGraphicsCaster.gameObject.GetComponent<Canvas>();
-				can.worldCamera = cameraForTexture;
-			}
-				
-		}
+		// Testing out some event based stuff
+		overlay.onVisibilityChange += OnVisChange;
+		ovrHandler.onDashboardChange += OnDashBoardChange;
 	}
 
 	void OnDestroy()
 	{
-		if(overlay != null)
-			overlay.DestroyOverlay();
+		overlay.DestroyOverlay();
 	}
 
 	void OnEnable()
@@ -211,41 +188,25 @@ public class Unity_Overlay : MonoBehaviour
 		if(lastVisible)
 		{
 			isVisible = true;
-
-			if(Application.isPlaying && overlay != null)
-				overlay.ShowOverlay();
+			overlay.ShowOverlay();
 		}
+			
 	}
 
 	void OnDisable()
 	{
 		lastVisible = isVisible;
-
-		if(Application.isPlaying && overlay != null)
-			overlay.HideOverlay();
+		overlay.HideOverlay();
 	}
 	
 	void Update() 
 	{
-		if(!Application.isPlaying && simulateInEditor)
-		{
-			UpdateEditorSimulator();
-			return;
-		}
-		else if(!Application.isPlaying && !simulateInEditor)
-		{
-			RemoveEditorSimulator();
-			return;
-		}
-
 		if(autoUpdateOverlay)
 			UpdateOverlay();
 	}
 
 	public void UpdateOverlay()
 	{
-		if(!Application.isPlaying)
-
 		if(!ovrHandler.OpenVRConnected)
 			return;
 		
@@ -303,105 +264,6 @@ public class Unity_Overlay : MonoBehaviour
 
 		if(enableSimulatedMouse && simulateUnityMouseInput)
 				UpdateUnityMouseSim();
-	}
-
-	void UpdateEditorSimulator()
-	{
-		if(cameraForTexture != null)
-		{
-			if(overlayTexture == null)
-			{
-				int width = cameraForTextureWidthOverride != 0 ? cameraForTextureWidthOverride : (int) (cameraForTexture.pixelWidth);
-				int height = cameraForTextureHeightOverride != 0 ? cameraForTextureHeightOverride : (int) (cameraForTexture.pixelHeight);
-
-				cameraForTexture.enabled = false;
-				cameraTexture = new RenderTexture(width, height, 24);
-
-				if(highQualityRenderTex)
-				{
-					cameraTexture.antiAliasing = 8;
-					cameraTexture.filterMode = FilterMode.Trilinear;
-				}
-
-				cameraForTexture.targetTexture = cameraTexture;
-				overlayTexture = cameraTexture;
-			}
-		}
-
-		var meshF = GetComponent<MeshFilter>();
-		var meshR = GetComponent<MeshRenderer>();
-
-		if(meshF == null)
-			meshF = gameObject.AddComponent<MeshFilter>();
-		
-		var mesh = new Mesh();
-
-		float rAspect = 1f;
-
-		if(overlayTexture)
-			rAspect = ((float) overlayTexture.height / (float) overlayTexture.width);
-
-		float nX = (-0.5f * widthInMeters),
-				pX = (0.5f * widthInMeters),
-				nY = (-0.5f * widthInMeters) * rAspect,
-				pY = (0.5f * widthInMeters) * rAspect;
-
-		Vector3[] verts = new Vector3[]
-		{
-			new Vector3(nX, pY, 0),
-			new Vector3(pX, pY, 0),
-			new Vector3(pX, nY, 0),
-			new Vector3(nX, nY, 0)
-		};
-
-		int[] tris = new int[] 
-		{
-			0, 1, 2,
-			0, 2, 3
-		};
-
-		Vector2 [] uvs = new Vector2[] 
-		{
-			new Vector2(0, 1),
-			new Vector2(1, 1),
-			new Vector2(1, 0),
-			new Vector2(0, 0)
-		};
-
-		mesh.vertices = verts;
-		mesh.triangles = tris;
-		mesh.uv = uvs;
-
-		mesh.RecalculateNormals();
-
-		meshF.mesh = mesh;
-		
-		if(meshR == null)
-		{
-			meshR = gameObject.AddComponent<MeshRenderer>();
-
-			var mat = new Material(Shader.Find("Diffuse"));
-
-			if(overlayTexture)
-				mat.mainTexture = overlayTexture;
-
-			meshR.sharedMaterial = mat;
-		}
-			
-		if(cameraForTexture)
-			cameraForTexture.Render();
-	}
-
-	void RemoveEditorSimulator()
-	{
-		var meshF = GetComponent<MeshFilter>();
-		var meshR = GetComponent<MeshRenderer>();
-
-		if(meshF)
-			DestroyImmediate(meshF);
-		
-		if(meshR)
-			DestroyImmediate(meshR);
 	}
 
 	void UpdateMouse()
@@ -517,10 +379,10 @@ public class Unity_Overlay : MonoBehaviour
 
 	void DrawOverlayThumbnail()
 	{
-		if(isDashboardOverlay && thumbnailTexture)
+		if(isDashboardOverlay && thumbNailTexture)
 		{
 			overlay.overlayThumbnailTextureBounds = textureBounds;
-			overlay.overlayThumbnailTexture = thumbnailTexture;
+			overlay.overlayThumbnailTexture = thumbNailTexture;
 		}
 	}
 
@@ -574,33 +436,32 @@ public class Unity_Overlay : MonoBehaviour
 
 		if( opts.deviceToTrack != deviceToTrack ) 
 		{
-			if(deviceToTrack == OverlayTrackedDevice.None)
-				overlay.overlayTransformType = VROverlayTransformType.VROverlayTransform_Absolute;
-			else
+			uint index = 0;
+			switch(deviceToTrack)
 			{
-				uint index = 0;
-				switch(deviceToTrack)
-				{
-					case OverlayTrackedDevice.HMD:
-						index = ovrHandler.poseHandler.hmdIndex;
-					break;
+				case OverlayTrackedDevice.HMD:
+					index = ovrHandler.poseHandler.hmdIndex;
+				break;
 
-					case OverlayTrackedDevice.RightHand:
-						index = ovrHandler.poseHandler.rightIndex;
-					break;
+				case OverlayTrackedDevice.RightHand:
+					index = ovrHandler.poseHandler.rightIndex;
+				break;
 
-					case OverlayTrackedDevice.LeftHand:
-						index = ovrHandler.poseHandler.leftIndex;
-					break;
+				case OverlayTrackedDevice.LeftHand:
+					index = ovrHandler.poseHandler.leftIndex;
+				break;
 
-					case OverlayTrackedDevice.CustomIndex:
-						index = customDeviceIndex;
-					break;
-				}
-
-				overlay.overlayTransformType = VROverlayTransformType.VROverlayTransform_TrackedDeviceRelative;
-				overlay.overlayTransformTrackedDeviceRelativeIndex = index;
+				case OverlayTrackedDevice.CustomIndex:
+					index = customDeviceIndex;
+				break;
 			}
+
+			VROverlayTransformType tType = deviceToTrack == OverlayTrackedDevice.None ?  
+				VROverlayTransformType.VROverlayTransform_Absolute :
+				VROverlayTransformType.VROverlayTransform_TrackedDeviceRelative;
+
+			overlay.overlayTransformType = tType;
+			overlay.overlayTransformTrackedDeviceRelativeIndex = index;
 
 			opts.deviceToTrack = deviceToTrack;
 		}
@@ -651,43 +512,6 @@ public class Unity_Overlay : MonoBehaviour
 		ret.a = (float) a / 255;
 
 		return ret;
-	}
-
-		// Some methods to make UI stuff easier
-	public void ToggleEnable()
-	{
-		gameObject.SetActive(!gameObject.activeSelf);
-	}
-
-	public void SetOpacity(float o)
-	{
-		opacity = o;
-	}
-
-	public void SetScale(float s)
-	{
-		widthInMeters = s;
-	}
-
-	public void SetToChaperoneColor(bool setToChapColor)
-	{
-		useChapColor = setToChapColor;
-	}
-	public void SetOnlyShowInDashboard(bool enble)
-	{
-		onlyShowInDashboard = enble;
-	}
-
-	// Event Callbac...Err... Delegates.
-	void OnVisChange(bool visible)
-	{
-		isVisible = visible;
-		Debug.Log("Is Visible: " + visible);
-	}
-	void OnDashBoardChange(bool open)
-	{
-		isDashboardOpen = open;
-		Debug.Log("Dashboard Open: " + open);
 	}
 }
 

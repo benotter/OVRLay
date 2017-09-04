@@ -7,6 +7,8 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 {
 	public float steamVRPollTime = 0.05f;
 
+	public bool connectedToSteam = false;
+
 	[Space(10)]
 
 	public GameObject hmdObject;
@@ -23,8 +25,8 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 
 	private OVR_Handler ovrHandler = OVR_Handler.instance;
 
-	private OVR_Overlay_Handler overlayHandler { get { return ovrHandler.overlayHandler; } }
-	private OVR_Pose_Handler poseHandler { get { return ovrHandler.poseHandler; } }
+	public OVR_Overlay_Handler overlayHandler { get { return ovrHandler.overlayHandler; } }
+	public OVR_Pose_Handler poseHandler { get { return ovrHandler.poseHandler; } }
 
 	private float lastSteamVRPollTime = 0f;
 
@@ -37,6 +39,8 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 
 	void OnOpenVRChange(bool connected) 
 	{
+		connectedToSteam = connected;
+
 		if(!connected)
 		{
 			onSteamVRDisconnect.Invoke();
@@ -104,7 +108,7 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 			else
 			{
 				Debug.Log("Connected to SteamVR!");
-
+				
 				onSteamVRConnect.Invoke();
 
 				return true;
