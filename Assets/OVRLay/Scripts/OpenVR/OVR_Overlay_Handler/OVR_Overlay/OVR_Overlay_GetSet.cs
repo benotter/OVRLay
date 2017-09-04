@@ -13,6 +13,7 @@ public partial class OVR_Overlay
         } 
     }
     protected CVROverlay Overlay { get { return OVR.Overlay; } }
+    protected CVRRenderModels RenderModels { get { return OVR.RenderModels; } }
 
     protected bool _overlayIsDashboard = false;
     public bool overlayIsDashboard 
@@ -432,23 +433,86 @@ public partial class OVR_Overlay
         }
     }
 
-    private bool _overlayFlagShowScrollWheel = false;
-    public bool overlayFlagShowScrollWheel
+    private HmdColor_t _overlayRenderModelColor = new HmdColor_t();
+    public Color overlayRenderModelColor 
     {
-        get
+        get 
         {
-            if(OverlayExists && validHandle)
-                Overlay.GetOverlayFlag(_overlayHandle, VROverlayFlags.ShowTouchPadScrollWheel, ref _overlayFlagShowScrollWheel);
+            Color c = new Color();
 
-            return _overlayFlagShowScrollWheel;
+            c.r = _overlayRenderModelColor.r;
+            c.g = _overlayRenderModelColor.g;
+            c.b = _overlayRenderModelColor.b;
+            c.a = _overlayRenderModelColor.a;
+
+            return c;
         }
         set 
         {
-            _overlayFlagShowScrollWheel = value;
-
-            if(OverlayExists && validHandle)
-                Overlay.SetOverlayFlag(_overlayHandle, VROverlayFlags.ShowTouchPadScrollWheel, _overlayFlagShowScrollWheel);
-
+            _overlayRenderModelColor.r = value.r;
+            _overlayRenderModelColor.g = value.g;
+            _overlayRenderModelColor.b = value.b;
+            _overlayRenderModelColor.a = value.a;
         }
+    }
+
+    private string _overlayRenderModel = "";
+    public string overlayRenderModel 
+    {
+        get 
+        {
+            return _overlayRenderModel;
+        }
+        set 
+        {
+            if(OverlayExists && validHandle)
+                error = Overlay.SetOverlayRenderModel(_overlayHandle, value, ref _overlayRenderModelColor);
+               
+            _overlayRenderModel = value;
+        }
+    }
+
+    // Overlay Flags
+
+    public bool GetFlag(VROverlayFlags flag) 
+    {
+        if(!OverlayExists || !validHandle)
+            return false;
+
+        bool flagged = false;
+
+        error = Overlay.GetOverlayFlag(_overlayHandle, flag, ref flagged);
+
+        return flagged;
+    }
+
+    public void SetFlag(VROverlayFlags flag, bool val)
+    {
+        if(OverlayExists && validHandle)
+            error = Overlay.SetOverlayFlag(_overlayHandle, flag, val);
+    }
+
+    public bool overlayFlag_Curved
+    {
+        get { return GetFlag(VROverlayFlags.Curved); }
+        set { SetFlag(VROverlayFlags.Curved, value); }
+    }
+
+    public bool overlayFlag_ShowScrollWheel
+    {
+        get { return GetFlag(VROverlayFlags.ShowTouchPadScrollWheel); }
+        set { SetFlag(VROverlayFlags.ShowTouchPadScrollWheel, value); }
+    }
+
+    public bool overlayFlag_SideBySide_Crossed
+    {
+        get { return GetFlag(VROverlayFlags.SideBySide_Crossed); }
+        set { SetFlag(VROverlayFlags.SideBySide_Crossed, value); }
+    }
+
+    public bool overlayFlag_SideBySide_Parallel
+    {
+        get { return GetFlag(VROverlayFlags.SideBySide_Parallel); }
+        set { SetFlag(VROverlayFlags.SideBySide_Parallel, value); }
     }
 }

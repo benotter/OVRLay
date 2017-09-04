@@ -34,9 +34,21 @@ public class Unity_Overlay : MonoBehaviour
 	public Texture thumbNailTexture;
 
 	[Space(10)]
+
 	public bool highQualityRenderTex = true;
 	public int renderTexWidthOverride = 0;
 	public int renderTexHeightOverride = 0;
+
+	[Space(10)]
+
+	public bool sideBySideParallel = false;
+	public bool sideBySideCrossed = false;
+	
+
+	[Space(10)]
+
+	public bool renderModel = false;
+	public string renderModelPath = "";
 	
 
 	[Space(10)]
@@ -64,6 +76,7 @@ public class Unity_Overlay : MonoBehaviour
 	public bool simulateUnityMouseInput = false;
 	public GraphicRaycaster canvasGraphicsCaster;
 
+	[Space(10)]
 
 	protected OVR_Handler ovrHandler = OVR_Handler.instance;
 	protected OVR_Overlay overlay = new OVR_Overlay();
@@ -95,6 +108,8 @@ public class Unity_Overlay : MonoBehaviour
 	private Color lastColor = Color.black;
 
 	public bool lastVisible = false;
+
+	private bool lastRenderModel = false;
 
 
 	private bool isDashboardOpen = true;
@@ -264,6 +279,18 @@ public class Unity_Overlay : MonoBehaviour
 
 		if(enableSimulatedMouse && simulateUnityMouseInput)
 				UpdateUnityMouseSim();
+
+
+		if(lastRenderModel != renderModel)
+		{
+			if(renderModel)
+			{
+				overlay.Test1(renderModelPath);
+				overlay.Test2(renderModelPath);
+			}
+		
+			lastRenderModel = renderModel;
+		}
 	}
 
 	void UpdateMouse()
@@ -519,8 +546,13 @@ public struct Unity_Overlay_Opts
 {
 	public Vector3 pos;
 	public Quaternion rot;
+
 	public bool isVisible;
 	public bool highQuality;
+
+	public bool sideBySideParallel;
+	public bool sideBySideCrossed;
+
 	public Color colorTint;
 	public float opacity;
 	public float widthInMeters;

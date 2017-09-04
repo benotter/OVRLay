@@ -40,6 +40,7 @@ public partial class OVR_Handler : System.IDisposable
         _Overlay = OpenVR.Overlay;
         _Settings = OpenVR.Settings;
         _Applications = OpenVR.Applications;
+        _RenderModels = OpenVR.RenderModels;
     }
 
     public bool ShutDownOpenVR()
@@ -52,6 +53,7 @@ public partial class OVR_Handler : System.IDisposable
         _Overlay = null;
         _Settings = null;
         _Applications = null;
+        _RenderModels = null;
 
         overlayHandler.DestroyAllOverlays();
         OpenVR.Shutdown();

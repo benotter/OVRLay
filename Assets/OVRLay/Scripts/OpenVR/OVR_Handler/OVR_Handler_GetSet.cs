@@ -37,9 +37,13 @@ public partial class OVR_Handler
     private CVRApplications _Applications;
     public CVRApplications Applications { get { return _Applications; } }
 
+    private CVRRenderModels _RenderModels;
+    public CVRRenderModels RenderModels {get { return _RenderModels; }}
+
 
     private EVRApplicationType _applicationType = EVRApplicationType.VRApplication_Background;
     public EVRApplicationType applicationType { get { return _applicationType; } }
+
     
 
     private OVR_Pose_Handler _poseHandler;
