@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using Valve.VR;
 
-public class OVR_Pose_Handler 
+public partial class OVR_Pose_Handler 
 {
     static private OVR_Pose_Handler _instance;
     static public OVR_Pose_Handler instance 
@@ -17,11 +17,11 @@ public class OVR_Pose_Handler
 
     static private OVR_Handler OVR { get { return OVR_Handler.instance; } }
 
-    static private CVRSystem System { get { return OVR.VRSystem; } }
+    static private CVRSystem VRSystem { get { return OVR.VRSystem; } }
     static private CVRCompositor Compositor { get { return OVR.Compositor; } }
     
     static private bool CompExists { get { return Compositor != null; } }
-    static private bool SysExists { get { return System != null; } }
+    static private bool SysExists { get { return VRSystem != null; } }
 
     public ETrackingUniverseOrigin trackingSpace = ETrackingUniverseOrigin.TrackingUniverseStanding;
     public TrackedDevicePose_t[] poses = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
@@ -39,8 +39,8 @@ public class OVR_Pose_Handler
         if(!CompExists || !SysExists)
             return;
 
-		rightIndex = System.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.RightHand);
-		leftIndex = System.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.LeftHand);
+		rightIndex = VRSystem.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.RightHand);
+		leftIndex = VRSystem.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.LeftHand);
 
         Compositor.GetLastPoses(poses, gamePoses);
     }

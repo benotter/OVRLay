@@ -23,7 +23,7 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 	public UnityEvent onSteamVRDisconnect = new UnityEvent();
 
 
-	private OVR_Handler ovrHandler = OVR_Handler.instance;
+	public OVR_Handler ovrHandler = OVR_Handler.instance;
 
 	public OVR_Overlay_Handler overlayHandler { get { return ovrHandler.overlayHandler; } }
 	public OVR_Pose_Handler poseHandler { get { return ovrHandler.poseHandler; } }
@@ -35,6 +35,8 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 		// Will always do a check on start first, then use timer for polling
 		lastSteamVRPollTime = steamVRPollTime + 1f;
 		ovrHandler.onOpenVRChange += OnOpenVRChange;
+
+		Application.targetFrameRate = 91;
 	}
 
 	void OnOpenVRChange(bool connected) 

@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+
 using Valve.VR;
 
+[ExecuteInEditMode]
 public class Unity_Overlay : MonoBehaviour 
 {
 	public enum OverlayTrackedDevice 
@@ -16,76 +19,120 @@ public class Unity_Overlay : MonoBehaviour
 		CustomIndex
 	}
 
+	public GameObject steamVRHandlerPrefab;
+
 	[Space(10)]
+	[Header("Update Settings")]
+	[Space(10)]
+
+	public bool autoUpdateOverlay = true;
+	public bool simulateInEditor = false;
+
+	[Space(10)]
+	[Header("Overlay Settings")]
+	[Space(10)]
+
+
 	public string overlayName = "Unity Overlay";
 	public string overlayKey = "unity_overlay";
+
+	[Space(10)]
 
 	public bool isDashboardOverlay = false;
 	public bool onlyShowInDashboard = false;
 
 	[Space(10)]
 
-	public bool simulateInEditor = false;
+	public bool isVisible = true;
 
+	[Space(10)]
+
+	public bool highQuality = false;
+
+	[HideInInspector]
+	public bool lastVisible = false;
+	
+	[HideInInspector]
+	private bool isDashboardOpen = true;
+
+	[Space(10)]
+	[Header("Overlay Mouse Input Settings")]
+	[Space(10)]
+
+	public bool enableSimulatedMouse = false;
+	public bool simulateUnityMouseInput = false;
+	
+	[Space(10)]
+
+	public GraphicRaycaster canvasGraphicsCaster;
+
+	[HideInInspector] public Vector2 mouseScale = new Vector2(1f, 1f);
+	[HideInInspector] public Vector2 mousePos = new Vector2();
+	[HideInInspector] public bool mouseDown = false;
+	[HideInInspector] public bool mouseDragging = false;
+	[HideInInspector] public float mouseDownTime = 0f;
+	
+
+	[Space(10)]
+	[Header("Overlay Texture Settings")]
 	[Space(10)]
 
 	public Texture overlayTexture;
 	public Camera cameraForTexture;
-	public Texture thumbNailTexture;
+	public bool dontForceRenderTexture = false;
+
+	[Space(10)]
+
+	public Texture thumbnailTexture;
+
+	[Space(10)]
+	[Header("3D Overlay Texture Settings")]
+
+	public bool sideBySideParallel = false;
+	public bool sideBySideCrossed = false;
 
 	[Space(10)]
 
 	public bool highQualityRenderTex = true;
+	public int cameraForTextureWidthOverride = 0;
+	public int cameraForTextureHeightOverride = 0;
+
+	[Space(10)]
+
 	public int renderTexWidthOverride = 0;
 	public int renderTexHeightOverride = 0;
 
 	[Space(10)]
 
-	public bool sideBySideParallel = false;
-	public bool sideBySideCrossed = false;
-	
-
-	[Space(10)]
-
-	public bool renderModel = false;
-	public string renderModelPath = "";
-	
-
-	[Space(10)]
-
-	public bool autoUpdateOverlay = true;
-
-	[Space(10)]
-
-	public bool isVisible = true;
-	public bool highQuality = false;
 	public Color colorTint = Color.white;
 	[Range(0f, 1f)]
 	public float opacity = 1.0f;
 	public float widthInMeters = 1.0f;
 
 	[Space(10)]
-	public OverlayTrackedDevice deviceToTrack = OverlayTrackedDevice.None;
-	public uint customDeviceIndex = 0;
+	[Header("Overlay Render Model Settings")]
+	[Space(10)]
 	
-	[Space(10)]
-	public bool enableSimulatedMouse = false;
-	public Vector2 mouseScale = new Vector2(1f, 1f);
+	public bool useRenderModel = false;
+	public string renderModelPath = "";
+
 
 	[Space(10)]
-	public bool simulateUnityMouseInput = false;
-	public GraphicRaycaster canvasGraphicsCaster;
-
+	[Header("Overlay Tracking Settings")]
 	[Space(10)]
 
+	public Unity_Overlay.OverlayTrackedDevice deviceToTrack = Unity_Overlay.OverlayTrackedDevice.None;
+	public uint customDeviceIndex = 0;
+
+	[Space(15)]
+
+	
 	protected OVR_Handler ovrHandler = OVR_Handler.instance;
-	protected OVR_Overlay overlay = new OVR_Overlay();
+	[HideInInspector] public OVR_Overlay overlay = new OVR_Overlay();
 	
 	protected Unity_Overlay_Opts opts = new Unity_Overlay_Opts();
 
 	protected RenderTexture cameraTexture;
-
-	protected Texture _mainTex;
 
 	protected VRTextureBounds_t textureBounds = new VRTextureBounds_t();
 	protected HmdVector2_t mouseScale_t = new HmdVector2_t();
@@ -94,11 +141,6 @@ public class Unity_Overlay : MonoBehaviour
 	private HashSet<Selectable> enterTargets = new HashSet<Selectable>();
 	private HashSet<Selectable> downTargets = new HashSet<Selectable>();
 
-	public bool mouseDown = false;
-	public bool mouseDragging = false;
-	public float mouseDownTime = 0f;
-
-	public Vector2 mousePos = new Vector2();
 
 	protected Unity_Overlay_UI_Handler uiHandler = new Unity_Overlay_UI_Handler();
 
@@ -106,13 +148,8 @@ public class Unity_Overlay : MonoBehaviour
 
 	private bool useChapColor = false;
 	private Color lastColor = Color.black;
-
-	public bool lastVisible = false;
-
 	private bool lastRenderModel = false;
 
-
-	private bool isDashboardOpen = true;
 
 	// Some methods to make UI stuff easier
 	public void ToggleEnable()
@@ -161,8 +198,11 @@ public class Unity_Overlay : MonoBehaviour
 			int width = renderTexWidthOverride != 0 ? renderTexWidthOverride : (int) (cameraForTexture.pixelWidth);
 			int height = renderTexHeightOverride != 0 ? renderTexHeightOverride : (int) (cameraForTexture.pixelHeight);
 
-			cameraForTexture.enabled = false;
+			if(!dontForceRenderTexture)
+				cameraForTexture.enabled = false;
+
 			cameraTexture = new RenderTexture(width, height, 24);
+			cameraTexture.name = "Overlay RenderTexture";
 
 			if(highQualityRenderTex)
 			{
@@ -170,32 +210,55 @@ public class Unity_Overlay : MonoBehaviour
 				cameraTexture.filterMode = FilterMode.Trilinear;
 			}
 
-			cameraForTexture.targetTexture = cameraTexture;
+			if(!dontForceRenderTexture)
+				cameraForTexture.targetTexture = cameraTexture;
+
 			overlayTexture = cameraTexture;
 		}
 
-		overlay.overlayTextureType = SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL") ? ETextureType.OpenGL : ETextureType.DirectX;
-		
-		overlay.overlayKey = overlayKey;
-		overlay.overlayName = overlayName;
+		if(Application.isPlaying)
+		{
+			// Check for Unity_SteamVR_Handler
+			Unity_SteamVR_Handler[] handlers = FindObjectsOfType(typeof(Unity_SteamVR_Handler)) as Unity_SteamVR_Handler[];
+			if(handlers.Length < 1)
+				Instantiate(steamVRHandlerPrefab);
 
-		if(isDashboardOverlay)
-			overlay.overlayIsDashboard = true;
+			ovrHandler = OVR_Handler.instance;
+			overlay = new OVR_Overlay();
+			
+			matrixConverter = new OVR_Utils.RigidTransform(transform);
 
-		textureBounds.uMin = 0;
-		textureBounds.vMin = 1;
+			overlay.overlayTextureType = SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL") ? ETextureType.OpenGL : ETextureType.DirectX;
+			
+			overlay.overlayKey = overlayKey;
+			overlay.overlayName = overlayName;
 
-		textureBounds.uMax = 1;
-		textureBounds.vMax = 0;
+			if(isDashboardOverlay)
+				overlay.overlayIsDashboard = true;
 
-		// Testing out some event based stuff
-		overlay.onVisibilityChange += OnVisChange;
-		ovrHandler.onDashboardChange += OnDashBoardChange;
+			textureBounds.uMin = 0;
+			textureBounds.vMin = 1;
+
+			textureBounds.uMax = 1;
+			textureBounds.vMax = 0;
+
+			// Testing out some event based stuff
+			overlay.onVisibilityChange += OnVisChange;
+			ovrHandler.onDashboardChange += OnDashBoardChange;
+
+			if(canvasGraphicsCaster && cameraForTexture)
+			{
+				Canvas can = canvasGraphicsCaster.gameObject.GetComponent<Canvas>();
+				can.worldCamera = cameraForTexture;
+			}
+				
+		}
 	}
 
 	void OnDestroy()
 	{
-		overlay.DestroyOverlay();
+		if(overlay != null)
+			overlay.DestroyOverlay();
 	}
 
 	void OnEnable()
@@ -203,25 +266,45 @@ public class Unity_Overlay : MonoBehaviour
 		if(lastVisible)
 		{
 			isVisible = true;
-			overlay.ShowOverlay();
+
+			if(Application.isPlaying && overlay != null)
+				overlay.ShowOverlay();
 		}
-			
 	}
 
 	void OnDisable()
 	{
 		lastVisible = isVisible;
-		overlay.HideOverlay();
+
+		if(Application.isPlaying && overlay != null)
+			overlay.HideOverlay();
 	}
 	
 	void Update() 
 	{
+		if(!Application.isPlaying && simulateInEditor)
+		{
+			UpdateEditorSimulator();
+			return;
+		}
+		else if(!Application.isPlaying && !simulateInEditor)
+		{
+			RemoveEditorSimulator();
+			return;
+		}
+
+		if(Application.isPlaying && simulateInEditor)
+			RemoveEditorSimulator();
+
 		if(autoUpdateOverlay)
 			UpdateOverlay();
 	}
 
 	public void UpdateOverlay()
 	{
+		if(!Application.isPlaying)
+			return;
+
 		if(!ovrHandler.OpenVRConnected)
 			return;
 		
@@ -281,16 +364,115 @@ public class Unity_Overlay : MonoBehaviour
 				UpdateUnityMouseSim();
 
 
-		if(lastRenderModel != renderModel)
+		if(lastRenderModel != useRenderModel)
 		{
-			if(renderModel)
+			if(useRenderModel)
 			{
 				overlay.Test1(renderModelPath);
 				overlay.Test2(renderModelPath);
 			}
 		
-			lastRenderModel = renderModel;
+			lastRenderModel = useRenderModel;
 		}
+	}
+
+	void UpdateEditorSimulator()
+	{
+		if(cameraForTexture != null)
+		{
+			if(overlayTexture == null)
+			{
+				int width = cameraForTextureWidthOverride != 0 ? cameraForTextureWidthOverride : (int) (cameraForTexture.pixelWidth);
+				int height = cameraForTextureHeightOverride != 0 ? cameraForTextureHeightOverride : (int) (cameraForTexture.pixelHeight);
+
+				cameraForTexture.enabled = false;
+				cameraTexture = new RenderTexture(width, height, 24);
+
+				if(highQualityRenderTex)
+				{
+					cameraTexture.antiAliasing = 8;
+					cameraTexture.filterMode = FilterMode.Trilinear;
+				}
+
+				cameraForTexture.targetTexture = cameraTexture;
+				overlayTexture = cameraTexture;
+			}
+		}
+
+		var meshF = GetComponent<MeshFilter>();
+		var meshR = GetComponent<MeshRenderer>();
+
+		if(meshF == null)
+			meshF = gameObject.AddComponent<MeshFilter>();
+		
+		var mesh = new Mesh();
+
+		float rAspect = 1f;
+
+		if(overlayTexture)
+			rAspect = ((float) overlayTexture.height / (float) overlayTexture.width);
+
+		float nX = (-0.5f * widthInMeters),
+				pX = (0.5f * widthInMeters),
+				nY = (-0.5f * widthInMeters) * rAspect,
+				pY = (0.5f * widthInMeters) * rAspect;
+
+		Vector3[] verts = new Vector3[]
+		{
+			new Vector3(nX, pY, 0),
+			new Vector3(pX, pY, 0),
+			new Vector3(pX, nY, 0),
+			new Vector3(nX, nY, 0)
+		};
+
+		int[] tris = new int[] 
+		{
+			0, 1, 2,
+			0, 2, 3
+		};
+
+		Vector2 [] uvs = new Vector2[] 
+		{
+			new Vector2(0, 1),
+			new Vector2(1, 1),
+			new Vector2(1, 0),
+			new Vector2(0, 0)
+		};
+
+		mesh.vertices = verts;
+		mesh.triangles = tris;
+		mesh.uv = uvs;
+
+		mesh.RecalculateNormals();
+
+		meshF.mesh = mesh;
+		
+		if(meshR == null)
+		{
+			meshR = gameObject.AddComponent<MeshRenderer>();
+
+			var mat = new Material(Shader.Find("Diffuse"));
+
+			if(overlayTexture)
+				mat.mainTexture = overlayTexture;
+
+			meshR.sharedMaterial = mat;
+		}
+			
+		if(cameraForTexture)
+			cameraForTexture.Render();
+	}
+
+	void RemoveEditorSimulator()
+	{
+		var meshF = GetComponent<MeshFilter>();
+		var meshR = GetComponent<MeshRenderer>();
+
+		if(meshF)
+			DestroyImmediate(meshF);
+		
+		if(meshR)
+			DestroyImmediate(meshR);
 	}
 
 	void UpdateMouse()
@@ -341,7 +523,18 @@ public class Unity_Overlay : MonoBehaviour
 			pd.dragging = true;
 		}
 
-		var nTargs = uiHandler.GetUITargets(canvasGraphicsCaster, pd);
+		HashSet<Selectable> nTargs = uiHandler.GetUITargets(canvasGraphicsCaster, pd);
+		
+		bool oldEn = cameraForTexture.enabled;
+		RenderTexture oldTex = cameraForTexture.targetTexture;
+
+		if(dontForceRenderTexture) 
+		{
+			cameraForTexture.enabled = false;
+			cameraForTexture.targetTexture = cameraTexture;
+
+			nTargs = uiHandler.GetUITargets(canvasGraphicsCaster, pd);
+		}	
 
 		uiHandler.EnterTargets(nTargs);
 
@@ -378,6 +571,12 @@ public class Unity_Overlay : MonoBehaviour
 
 			downTargets.Clear();
 		}
+
+		if(dontForceRenderTexture)
+		{
+			cameraForTexture.targetTexture = oldTex;
+			cameraForTexture.enabled = oldEn;
+		}
 	}
 
 	void UpdateTexture()
@@ -386,7 +585,27 @@ public class Unity_Overlay : MonoBehaviour
 			return;
 
 		if(cameraForTexture)
-			cameraForTexture.Render();
+		{
+			if(dontForceRenderTexture)
+			{	
+				cameraForTexture.targetTexture = cameraTexture;
+				cameraForTexture.Render();
+				cameraForTexture.targetTexture = null;
+
+				if(!cameraForTexture.enabled)
+					cameraForTexture.enabled = true;
+			}
+			else
+			{
+				if(cameraForTexture.targetTexture != cameraTexture)
+					cameraForTexture.targetTexture = cameraTexture;
+
+				if(cameraForTexture.enabled)
+					cameraForTexture.enabled = false;
+				
+				cameraForTexture.Render();
+			}
+		}
 
 		if(!overlayTexture)
 			return;
@@ -401,15 +620,14 @@ public class Unity_Overlay : MonoBehaviour
 		mouseScale.y = mouseScale_t.v1 = reverseAspect;
 
 		overlay.overlayTexture = overlayTexture;
-
 	}
 
 	void DrawOverlayThumbnail()
 	{
-		if(isDashboardOverlay && thumbNailTexture)
+		if(isDashboardOverlay && thumbnailTexture)
 		{
 			overlay.overlayThumbnailTextureBounds = textureBounds;
-			overlay.overlayThumbnailTexture = thumbNailTexture;
+			overlay.overlayThumbnailTexture = thumbnailTexture;
 		}
 	}
 
@@ -459,6 +677,18 @@ public class Unity_Overlay : MonoBehaviour
 			overlay.overlayWidthInMeters = widthInMeters;
 
 			opts.widthInMeters = widthInMeters;
+		}
+
+		if(opts.sideBySideParallel != sideBySideParallel)
+		{
+			overlay.overlayFlag_SideBySide_Parallel = sideBySideParallel;
+			opts.sideBySideParallel = sideBySideParallel;
+		}
+
+		if(opts.sideBySideCrossed != sideBySideCrossed)
+		{
+			overlay.overlayFlag_SideBySide_Crossed = sideBySideCrossed;
+			opts.sideBySideCrossed = sideBySideCrossed;
 		}
 
 		if( opts.deviceToTrack != deviceToTrack ) 
