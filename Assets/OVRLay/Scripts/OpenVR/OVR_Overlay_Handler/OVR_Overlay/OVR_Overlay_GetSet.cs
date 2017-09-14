@@ -73,7 +73,7 @@ public partial class OVR_Overlay
             _overlayHighQuality = value;
 
             if(value && OverlayExists && validHandle)
-                Overlay.SetHighQualityOverlay(_overlayHandle);
+                error = Overlay.SetHighQualityOverlay(_overlayHandle);
         }
     }
 
@@ -86,7 +86,7 @@ public partial class OVR_Overlay
             {
                 float r = 0f, g = 0f, b = 0f;
 
-                Overlay.GetOverlayColor(_overlayHandle, ref r, ref g, ref b);
+                error = Overlay.GetOverlayColor(_overlayHandle, ref r, ref g, ref b);
 
                 _overlayColor.r = r;
                 _overlayColor.g = g;
@@ -100,7 +100,7 @@ public partial class OVR_Overlay
             _overlayColor = value;
 
             if(OverlayExists && validHandle)
-                Overlay.SetOverlayColor(_overlayHandle, _overlayColor.r, _overlayColor.g, _overlayColor.b);
+                error = Overlay.SetOverlayColor(_overlayHandle, _overlayColor.r, _overlayColor.g, _overlayColor.b);
         }
     }
 
@@ -110,7 +110,7 @@ public partial class OVR_Overlay
         get 
         { 
             if(OverlayExists && validHandle)
-                Overlay.GetOverlayAlpha(_overlayHandle, ref _overlayAlpha);
+                error = Overlay.GetOverlayAlpha(_overlayHandle, ref _overlayAlpha);
 
             return _overlayAlpha;
         }
@@ -120,7 +120,7 @@ public partial class OVR_Overlay
             _overlayAlpha = value;
 
             if(OverlayExists && validHandle)
-                Overlay.SetOverlayAlpha(_overlayHandle, _overlayAlpha);
+                error = Overlay.SetOverlayAlpha(_overlayHandle, _overlayAlpha);
         }
     }
 
@@ -130,7 +130,7 @@ public partial class OVR_Overlay
         get 
         {
             if(OverlayExists && validHandle)
-                Overlay.GetOverlayWidthInMeters(_overlayHandle, ref _overlayWidthInMeters);
+                error = Overlay.GetOverlayWidthInMeters(_overlayHandle, ref _overlayWidthInMeters);
 
             return _overlayWidthInMeters;
         }
@@ -139,7 +139,7 @@ public partial class OVR_Overlay
             _overlayWidthInMeters = value;
 
             if(OverlayExists && validHandle)
-                Overlay.SetOverlayWidthInMeters(_overlayHandle, value);
+                error = Overlay.SetOverlayWidthInMeters(_overlayHandle, value);
         }
     }
 
@@ -151,7 +151,7 @@ public partial class OVR_Overlay
         get 
         {
             if(OverlayExists && validHandle)
-                Overlay.GetOverlayTextureBounds(_overlayHandle, ref _overlayTextureBounds);
+                error = Overlay.GetOverlayTextureBounds(_overlayHandle, ref _overlayTextureBounds);
                 
             return _overlayTextureBounds;
         }
@@ -160,7 +160,7 @@ public partial class OVR_Overlay
             _overlayTextureBounds = value;
 
             if(OverlayExists && validHandle)
-                Overlay.SetOverlayTextureBounds(_overlayHandle, ref _overlayTextureBounds);
+                error = Overlay.SetOverlayTextureBounds(_overlayHandle, ref _overlayTextureBounds);
         }
     }
 
@@ -170,7 +170,7 @@ public partial class OVR_Overlay
         get 
         {
             if(OverlayExists && validHandle)
-                Overlay.GetOverlayTextureBounds(_overlayThumbnailHandle, ref _overlayThumbnailTextureBounds);
+                error = Overlay.GetOverlayTextureBounds(_overlayThumbnailHandle, ref _overlayThumbnailTextureBounds);
                 
             return _overlayThumbnailTextureBounds;
         }
@@ -179,7 +179,7 @@ public partial class OVR_Overlay
             _overlayThumbnailTextureBounds = value;
 
             if(OverlayExists && validHandle)
-                Overlay.SetOverlayTextureBounds(_overlayThumbnailHandle, ref _overlayThumbnailTextureBounds);
+                error = Overlay.SetOverlayTextureBounds(_overlayThumbnailHandle, ref _overlayThumbnailTextureBounds);
         }
     }
 
@@ -189,7 +189,7 @@ public partial class OVR_Overlay
         get 
         {
             if(OverlayExists && validHandle)
-                Overlay.GetOverlayTexelAspect(_overlayHandle, ref _overlayTexelAspect);
+                error = Overlay.GetOverlayTexelAspect(_overlayHandle, ref _overlayTexelAspect);
 
             return _overlayTexelAspect;
         }
@@ -198,7 +198,7 @@ public partial class OVR_Overlay
         {
             _overlayTexelAspect = value;
             if(OverlayExists && validHandle)
-                Overlay.SetOverlayTexelAspect(_overlayHandle, _overlayTexelAspect);
+                error = Overlay.SetOverlayTexelAspect(_overlayHandle, _overlayTexelAspect);
         }
     }
 
@@ -212,7 +212,7 @@ public partial class OVR_Overlay
             
             
             if(OverlayExists && validHandle)
-                Overlay.GetOverlayImageData(_overlayHandle, System.IntPtr.Zero, 0, ref width, ref height);
+                error = Overlay.GetOverlayImageData(_overlayHandle, System.IntPtr.Zero, 0, ref width, ref height);
             
             _overlaySize[0] = width;
             _overlaySize[1] = height;
@@ -235,7 +235,7 @@ public partial class OVR_Overlay
         get 
         {
             if(OverlayExists && validHandle)
-                Overlay.GetOverlayTransformType(_overlayHandle, ref _overlayTransformType);
+                error = Overlay.GetOverlayTransformType(_overlayHandle, ref _overlayTransformType);
 
             return _overlayTransformType;
         }
@@ -267,7 +267,7 @@ public partial class OVR_Overlay
                     default:
                     case VROverlayTransformType.VROverlayTransform_Absolute:
 
-                        Overlay.GetOverlayTransformAbsolute(
+                        error = Overlay.GetOverlayTransformAbsolute(
                             _overlayHandle, 
                             ref _overlayTransformAbsoluteTrackingOrigin, 
                             ref _overlayTransform);
@@ -276,7 +276,7 @@ public partial class OVR_Overlay
 
                     case VROverlayTransformType.VROverlayTransform_TrackedDeviceRelative:
 
-                        Overlay.GetOverlayTransformTrackedDeviceRelative(
+                        error = Overlay.GetOverlayTransformTrackedDeviceRelative(
                             _overlayHandle,
                             ref _overlayTransformTrackedDeviceRelativeIndex,
                             ref _overlayTransform);
@@ -300,7 +300,7 @@ public partial class OVR_Overlay
                     default:
                     case VROverlayTransformType.VROverlayTransform_Absolute:
 
-                        Overlay.SetOverlayTransformAbsolute(
+                        error = Overlay.SetOverlayTransformAbsolute(
                             _overlayHandle, 
                             _overlayTransformAbsoluteTrackingOrigin, 
                             ref _overlayTransform);
@@ -309,7 +309,7 @@ public partial class OVR_Overlay
 
                     case VROverlayTransformType.VROverlayTransform_TrackedDeviceRelative:
 
-                        Overlay.SetOverlayTransformTrackedDeviceRelative(
+                        error = Overlay.SetOverlayTransformTrackedDeviceRelative(
                             _overlayHandle,
                             _overlayTransformTrackedDeviceRelativeIndex,
                             ref _overlayTransform);
@@ -338,13 +338,13 @@ public partial class OVR_Overlay
             if(OverlayExists && validHandle)
                 if(value)
                 {
-                    Overlay.ShowOverlay(_overlayHandle);
+                    error = Overlay.ShowOverlay(_overlayHandle);
                     if(_overlayIsDashboard)
                         Overlay.ShowOverlay(_overlayThumbnailHandle);
                 }
                     
                 else
-                    Overlay.HideOverlay(_overlayHandle);
+                    error = Overlay.HideOverlay(_overlayHandle);
         }
     }
 
@@ -354,7 +354,7 @@ public partial class OVR_Overlay
         get 
         {
             if(OverlayExists && validHandle)
-                Overlay.GetOverlayInputMethod(_overlayHandle, ref _overlayInputMethod);
+                error = Overlay.GetOverlayInputMethod(_overlayHandle, ref _overlayInputMethod);
             
             return _overlayInputMethod;
         }
@@ -364,7 +364,7 @@ public partial class OVR_Overlay
             _overlayInputMethod = value;
 
             if(OverlayExists && validHandle)
-                Overlay.SetOverlayInputMethod(_overlayHandle, _overlayInputMethod);
+                error = Overlay.SetOverlayInputMethod(_overlayHandle, _overlayInputMethod);
         }
     }
 
@@ -374,7 +374,7 @@ public partial class OVR_Overlay
         get 
         {
             if(OverlayExists && validHandle)
-                Overlay.GetOverlayMouseScale(_overlayHandle, ref _overlayMouseScale);
+                error = Overlay.GetOverlayMouseScale(_overlayHandle, ref _overlayMouseScale);
 
             return _overlayMouseScale;
         }
@@ -385,7 +385,7 @@ public partial class OVR_Overlay
             _overlayMouseScale.v1 = value.v1;
 
             if(OverlayExists && validHandle)
-                Overlay.SetOverlayMouseScale(_overlayHandle, ref _overlayMouseScale);
+                error = Overlay.SetOverlayMouseScale(_overlayHandle, ref _overlayMouseScale);
         }
     }
 
@@ -412,7 +412,7 @@ public partial class OVR_Overlay
             _overlayTexture_t.eColorSpace = EColorSpace.Auto;
 
             if(OverlayExists && validHandle)
-                Overlay.SetOverlayTexture(_overlayHandle, ref _overlayTexture_t);
+                error = Overlay.SetOverlayTexture(_overlayHandle, ref _overlayTexture_t);
         }
     }
 
@@ -429,7 +429,7 @@ public partial class OVR_Overlay
             _overlayThumbnailTexture_t.eColorSpace = EColorSpace.Auto;
 
             if(OverlayExists && overlayIsDashboard)
-                Overlay.SetOverlayTexture(_overlayThumbnailHandle, ref _overlayThumbnailTexture_t);
+                error = Overlay.SetOverlayTexture(_overlayThumbnailHandle, ref _overlayThumbnailTexture_t);
         }
     }
 

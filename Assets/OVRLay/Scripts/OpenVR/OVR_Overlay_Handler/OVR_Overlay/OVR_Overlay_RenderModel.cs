@@ -1,42 +1,73 @@
 using System;
 using System.Collections;
 using System.Runtime.InteropServices;
+using System.Text;
 
 using UnityEngine;
 using Valve.VR;
 
 public partial class OVR_Overlay 
 {
-    public void Test1(string modelPath = "")
+    public RenderModel_t renderModel;
+    public IntPtr renderModelP;
+
+    public RenderModel_TextureMap_t renderModelTexMap;
+    public IntPtr renderModelTexMapP;
+
+
+    public void Test1(string modelPath)
     {
-        if(modelPath == "")
-            modelPath = Application.dataPath + "/RenderModel Tests/test_obj/test_obj.json";
+        Debug.Log("RenderModel Path: \r\n" + modelPath);
 
-        string rmPath = modelPath;
-
-        Debug.Log("RenderModel Path: \r\n" + rmPath);
-
-        RenderModel_t render = new RenderModel_t();
-
-        IntPtr renderP = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RenderModel_t)));
-        Marshal.StructureToPtr(render, renderP, false);
-
-        EVRRenderModelError error = EVRRenderModelError.None;
-
-        do
-        {
-            error = RenderModels.LoadRenderModel_Async(rmPath, ref renderP);
-        }
-        while( (error == EVRRenderModelError.Loading) );
+        if( LoadRenderModel(modelPath) && LoadRenderModelTexture(renderModel, renderModelP) )
+            Debug.Log("RenderModel Loaded Succesfully!");
         
-
-        if(error != EVRRenderModelError.None)
-            Debug.Log("RenderModel Error: " + error );
     }
 
-    public void Test2(string modelPath) 
+    public bool LoadRenderModel(string modelPath)
     {
+        renderModel = new RenderModel_t();
+
+        renderModelP = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RenderModel_t)));
+        Marshal.StructureToPtr(renderModel, renderModelP, false);
+
+        EVRRenderModelError error = EVRRenderModelError.None;
+        while( (EVRRenderModelError.Loading == (error = RenderModels.LoadRenderModel_Async(modelPath, ref renderModelP))) ){};    
+
+        if(error != EVRRenderModelError.None)
+        {
+            Debug.Log("RenderModel Error: " + error );
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool LoadRenderModelTexture(RenderModel_t rend, IntPtr rendP)
+    {
+        renderModelTexMap = new RenderModel_TextureMap_t();
+
+        renderModelTexMapP = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(RenderModel_TextureMap_t)));
+        Marshal.StructureToPtr(renderModelTexMap, renderModelTexMapP, false);
+
+        EVRRenderModelError error = EVRRenderModelError.None;
+        while(EVRRenderModelError.Loading == (error = RenderModels.LoadTexture_Async(rend.diffuseTextureId, ref renderModelTexMapP))){};
+
+        if(error != EVRRenderModelError.None)
+        {
+            Debug.Log("Error Loading Render Model Texture: " + error);
+            RenderModels.FreeRenderModel(rendP);
+            return false;
+        }
+        
+        return true;
+    }
+
+    public void Test2(string modelPath)
+    {
+        overlayRenderModelColor = Color.white;
         overlayRenderModel = modelPath;
+
         if(ErrorCheck(error))
             Debug.Log("Trouble Setting Render Model!");
     }

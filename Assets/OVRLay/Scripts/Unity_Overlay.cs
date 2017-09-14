@@ -116,7 +116,6 @@ public class Unity_Overlay : MonoBehaviour
 	public bool useRenderModel = false;
 	public string renderModelPath = "";
 
-
 	[Space(10)]
 	[Header("Overlay Tracking Settings")]
 	[Space(10)]
@@ -368,7 +367,7 @@ public class Unity_Overlay : MonoBehaviour
 		{
 			if(useRenderModel)
 			{
-				overlay.Test1(renderModelPath);
+				//overlay.Test1(renderModelPath);
 				overlay.Test2(renderModelPath);
 			}
 		
