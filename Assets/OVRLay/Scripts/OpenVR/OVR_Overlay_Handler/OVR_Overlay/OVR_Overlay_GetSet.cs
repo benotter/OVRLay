@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+
 using UnityEngine;
 using Valve.VR;
 
@@ -434,18 +436,18 @@ public partial class OVR_Overlay
     }
 
     private HmdColor_t _overlayRenderModelColor = new HmdColor_t();
+    private Color _overlayRenderModelColor_U = new Color();
+
     public Color overlayRenderModelColor 
     {
         get 
         {
-            Color c = new Color();
+            _overlayRenderModelColor_U.r = _overlayRenderModelColor.r;
+            _overlayRenderModelColor_U.g = _overlayRenderModelColor.g;
+            _overlayRenderModelColor_U.b = _overlayRenderModelColor.b;
+            _overlayRenderModelColor_U.a = _overlayRenderModelColor.a;
 
-            c.r = _overlayRenderModelColor.r;
-            c.g = _overlayRenderModelColor.g;
-            c.b = _overlayRenderModelColor.b;
-            c.a = _overlayRenderModelColor.a;
-
-            return c;
+            return _overlayRenderModelColor_U;
         }
         set 
         {
@@ -453,6 +455,9 @@ public partial class OVR_Overlay
             _overlayRenderModelColor.g = value.g;
             _overlayRenderModelColor.b = value.b;
             _overlayRenderModelColor.a = value.a;
+
+            if(_overlayRenderModel != "")
+                overlayRenderModel = _overlayRenderModel;
         }
     }
 
@@ -465,10 +470,10 @@ public partial class OVR_Overlay
         }
         set 
         {
-            if(OverlayExists && validHandle)
-                error = Overlay.SetOverlayRenderModel(_overlayHandle, value, ref _overlayRenderModelColor);
-               
             _overlayRenderModel = value;
+
+            if(OverlayExists && validHandle)
+                error = Overlay.SetOverlayRenderModel(_overlayHandle, _overlayRenderModel, ref _overlayRenderModelColor);
         }
     }
 

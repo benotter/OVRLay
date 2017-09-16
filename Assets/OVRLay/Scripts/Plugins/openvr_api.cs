@@ -4448,7 +4448,7 @@ public enum EVRScreenshotError
 	public float rfTextureCoord0; //float[2]
 	public float rfTextureCoord1;
 }
-[StructLayout(LayoutKind.Sequential)] public struct RenderModel_TextureMap_t
+[System.Serializable] [StructLayout(LayoutKind.Sequential)] public struct RenderModel_TextureMap_t
 {
 	public char unWidth;
 	public char unHeight;
@@ -4473,7 +4473,7 @@ public enum EVRScreenshotError
 		unpacked.rubTextureMapData = this.rubTextureMapData;
 	}
 }
-[StructLayout(LayoutKind.Sequential)] public struct RenderModel_t
+[System.Serializable] [StructLayout(LayoutKind.Sequential)] public struct RenderModel_t
 {
 	public IntPtr rVertexData; // const struct vr::RenderModel_Vertex_t *
 	public uint unVertexCount;

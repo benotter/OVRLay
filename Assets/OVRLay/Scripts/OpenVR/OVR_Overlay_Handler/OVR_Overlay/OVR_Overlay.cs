@@ -80,6 +80,11 @@ public partial class OVR_Overlay
         return err;
     }
 
+    public void VRShutdown() 
+    {
+       
+    }
+
     public OVR_Overlay()
     {
         OVR_Overlay_Handler.instance.RegisterOverlay(this);

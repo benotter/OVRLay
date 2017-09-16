@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+using Valve.VR;
+
 public class Unity_SteamVR_Handler : MonoBehaviour 
 {
 	public float steamVRPollTime = 0.05f;
@@ -18,6 +20,10 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 	[Space(10)]
 
 	public bool autoUpdate = true;
+
+	[Space(10)]
+
+	public bool debugLog = false;
 
 	public UnityEvent onSteamVRConnect = new UnityEvent();
 	public UnityEvent onSteamVRDisconnect = new UnityEvent();
@@ -37,6 +43,8 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 		ovrHandler.onOpenVRChange += OnOpenVRChange;
 
 		Application.targetFrameRate = 91;
+
+		ovrHandler.onVREvent += VREventHandler;
 	}
 
 	void OnOpenVRChange(bool connected) 
@@ -81,6 +89,12 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 		}
 		else if(leftTrackerObj)
 			leftTrackerObj.SetActive(false);
+	}
+
+	public void VREventHandler(VREvent_t e)
+	{
+		if(debugLog)
+			Debug.Log("VR Event: " + e);
 	}
 
 	bool SteamVRStartup()

@@ -1,4 +1,4 @@
-# OVRLay (1.1)
+# OVRLay (1.2)
 
 A(n)? (Hopefully) Easy-to-use toolkit for developing OpenVR Overlays with Unity Engine!
 
@@ -15,6 +15,8 @@ It provides the neccassary OpenVR API's, Plugins, and Unity Prefabs to enable a 
 - Implements and Supports most OpenVR Overlay Features / Settings / Flags!
 
 - Create and Manipulate Both In-Game, and Dashboard Menu Overlays!
+
+- Load in OBJ (WaveFront) files as RenderModels, and attach them to overlays!
 
 - Support for the lastest Stable Release of Unity (2017.1)!
 

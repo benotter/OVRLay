@@ -29,67 +29,23 @@ public class Unity_Overlay : MonoBehaviour
 	public bool simulateInEditor = false;
 
 	[Space(10)]
-	[Header("Overlay Settings")]
-	[Space(10)]
-
-
-	public string overlayName = "Unity Overlay";
-	public string overlayKey = "unity_overlay";
-
-	[Space(10)]
-
-	public bool isDashboardOverlay = false;
-	public bool onlyShowInDashboard = false;
-
-	[Space(10)]
-
-	public bool isVisible = true;
-
-	[Space(10)]
-
-	public bool highQuality = false;
-
-	[HideInInspector]
-	public bool lastVisible = false;
-	
-	[HideInInspector]
-	private bool isDashboardOpen = true;
-
-	[Space(10)]
-	[Header("Overlay Mouse Input Settings")]
-	[Space(10)]
-
-	public bool enableSimulatedMouse = false;
-	public bool simulateUnityMouseInput = false;
-	
-	[Space(10)]
-
-	public GraphicRaycaster canvasGraphicsCaster;
-
-	[HideInInspector] public Vector2 mouseScale = new Vector2(1f, 1f);
-	[HideInInspector] public Vector2 mousePos = new Vector2();
-	[HideInInspector] public bool mouseDown = false;
-	[HideInInspector] public bool mouseDragging = false;
-	[HideInInspector] public float mouseDownTime = 0f;
-	
-
-	[Space(10)]
 	[Header("Overlay Texture Settings")]
 	[Space(10)]
 
 	public Texture overlayTexture;
+
+	[Space(10)]
+
 	public Camera cameraForTexture;
+	public int renderTexWidthOverride = 0;
+	public int renderTexHeightOverride = 0;
+
+	[Space(10)]
 	public bool dontForceRenderTexture = false;
 
 	[Space(10)]
 
-	public Texture thumbnailTexture;
-
-	[Space(10)]
-	[Header("3D Overlay Texture Settings")]
-
-	public bool sideBySideParallel = false;
-	public bool sideBySideCrossed = false;
+	public Texture dashboardThumbnailTexture;
 
 	[Space(10)]
 
@@ -97,57 +53,106 @@ public class Unity_Overlay : MonoBehaviour
 	public int cameraForTextureWidthOverride = 0;
 	public int cameraForTextureHeightOverride = 0;
 
-	[Space(10)]
-
-	public int renderTexWidthOverride = 0;
-	public int renderTexHeightOverride = 0;
 
 	[Space(10)]
 
-	public Color colorTint = Color.white;
-	[Range(0f, 1f)]
-	public float opacity = 1.0f;
+	[Range(0f, 1f)] public float opacity = 1.0f;
 	public float widthInMeters = 1.0f;
+	public Color colorTint = Color.white;
+	public bool useChaperoneColor = false;
 
+	
 	[Space(10)]
 	[Header("Overlay Render Model Settings")]
 	[Space(10)]
 	
-	public bool useRenderModel = false;
+	public bool enableRenderModel = false;
 	public string renderModelPath = "";
+	public Color renderModelColor = Color.white;
+
 
 	[Space(10)]
-	[Header("Overlay Tracking Settings")]
+	[Header("3D Overlay Texture Settings")]
+	[Space(10)]
+
+	public bool sideBySideParallel = false;
+	public bool sideBySideCrossed = false;
+
+
+	[Space(10)]
+	[Header("Overlay Settings")]
+	[Space(10)]
+
+	public string overlayName = "Unity Overlay";
+	public string overlayKey = "unity_overlay";
+
+	[Space(10)]
+
+	public bool isDashboardOverlay = false;
+
+	[Space(10)]
+
+	public bool highQuality = false;
+
+	[Space(10)]
+
+	public bool isVisible = true;
+	public bool onlyShowInDashboard = false;
+
+	
+	[HideInInspector] public bool lastVisible = false;
+	[HideInInspector] private bool isDashboardOpen = true;
+
+
+	[Space(10)]
+	[Header("Overlay Device Tracking Settings")]
 	[Space(10)]
 
 	public Unity_Overlay.OverlayTrackedDevice deviceToTrack = Unity_Overlay.OverlayTrackedDevice.None;
 	public uint customDeviceIndex = 0;
 
-	[Space(15)]
 
+	[Space(10)]
+	[Header("Overlay Mouse Input Settings")]
+	[Space(10)]
+
+	public bool enableSimulatedMouse = false;
+
+	[Space(10)]
 	
-	protected OVR_Handler ovrHandler = OVR_Handler.instance;
-	[HideInInspector] public OVR_Overlay overlay = new OVR_Overlay();
+	public bool simulateUnityMouseInput = false;
+	public GraphicRaycaster canvasGraphicsCaster;
+
+	[Space(10)]
+
+	[HideInInspector] public Vector2 mouseScale = new Vector2(1f, 1f);
+	[HideInInspector] public Vector2 mousePos = new Vector2();
+	[HideInInspector] public bool mouseDown = false;
+	[HideInInspector] public bool mouseDragging = false;
+	[HideInInspector] public float mouseDownTime = 0f;
+
+
+	public OVR_Handler ovrHandler = OVR_Handler.instance;
+	public OVR_Overlay overlay = new OVR_Overlay();
 	
-	protected Unity_Overlay_Opts opts = new Unity_Overlay_Opts();
 
-	protected RenderTexture cameraTexture;
+	private Unity_Overlay_Opts opts = new Unity_Overlay_Opts();
 
-	protected VRTextureBounds_t textureBounds = new VRTextureBounds_t();
+	private RenderTexture cameraTexture;
+
+	private VRTextureBounds_t textureBounds = new VRTextureBounds_t();
 	protected HmdVector2_t mouseScale_t = new HmdVector2_t();
-	protected OVR_Utils.RigidTransform matrixConverter;
+
+	private OVR_Utils.RigidTransform matrixConverter;
 
 	private HashSet<Selectable> enterTargets = new HashSet<Selectable>();
 	private HashSet<Selectable> downTargets = new HashSet<Selectable>();
-
 
 	protected Unity_Overlay_UI_Handler uiHandler = new Unity_Overlay_UI_Handler();
 
 	private float reverseAspect = 0f;
 
-	private bool useChapColor = false;
-	private Color lastColor = Color.black;
-	private bool lastRenderModel = false;
+	private Color lastChaperoneColor = Color.black;
 
 
 	// Some methods to make UI stuff easier
@@ -168,7 +173,7 @@ public class Unity_Overlay : MonoBehaviour
 
 	public void SetToChaperoneColor(bool setToChapColor)
 	{
-		useChapColor = setToChapColor;
+		useChaperoneColor = setToChapColor;
 	}
 	public void SetOnlyShowInDashboard(bool enble)
 	{
@@ -250,14 +255,15 @@ public class Unity_Overlay : MonoBehaviour
 				Canvas can = canvasGraphicsCaster.gameObject.GetComponent<Canvas>();
 				can.worldCamera = cameraForTexture;
 			}
-				
 		}
 	}
 
 	void OnDestroy()
 	{
 		if(overlay != null)
+		{
 			overlay.DestroyOverlay();
+		}
 	}
 
 	void OnEnable()
@@ -316,7 +322,7 @@ public class Unity_Overlay : MonoBehaviour
 			}
 
 			isDashboardOpen = ovrHandler.Overlay.IsDashboardVisible();
-		}
+		}	
 
 		if(onlyShowInDashboard && !isDashboardOpen)
 		{
@@ -327,151 +333,90 @@ public class Unity_Overlay : MonoBehaviour
 		{
 			if(!isVisible)
 				isVisible = true;
-		} 
-
-		UpdateOpts();
+		}
 
 		if(!enabled)
 			return;
 
-		DrawOverlayThumbnail();
+		UpdateOpts();
+		UpdateOverlayThumbnail();
 
-		if(!isVisible)
-			return;		
+		if(enableSimulatedMouse)
+		{
+			UpdateMouse();
 
-		if(useChapColor)
+			if(simulateUnityMouseInput)
+				UpdateUnityMouseSim();
+		}
+
+		if(useChaperoneColor)
 		{
 			Color chapCol = GetChaperoneColor();
-			if(chapCol != lastColor)
+			if(chapCol != lastChaperoneColor)
 			{
 				overlay.overlayColor = chapCol;
-				lastColor = chapCol;
+				lastChaperoneColor = chapCol;
 			}
 		}
-		else if (lastColor != Color.black)
+		else if (lastChaperoneColor != Color.black)
 		{
 			overlay.overlayColor = colorTint;
-			lastColor = Color.black;
+			lastChaperoneColor = Color.black;
 		}
 
 		UpdateTexture();
-
-		if(enableSimulatedMouse)
-			UpdateMouse();
-
-		if(enableSimulatedMouse && simulateUnityMouseInput)
-				UpdateUnityMouseSim();
-
-
-		if(lastRenderModel != useRenderModel)
-		{
-			if(useRenderModel)
-			{
-				//overlay.Test1(renderModelPath);
-				overlay.Test2(renderModelPath);
-			}
-		
-			lastRenderModel = useRenderModel;
-		}
 	}
 
-	void UpdateEditorSimulator()
+	void UpdateTexture()
 	{
-		if(cameraForTexture != null)
+		if(!overlay.created)
+			return;
+
+		if(cameraForTexture)
 		{
-			if(overlayTexture == null)
-			{
-				int width = cameraForTextureWidthOverride != 0 ? cameraForTextureWidthOverride : (int) (cameraForTexture.pixelWidth);
-				int height = cameraForTextureHeightOverride != 0 ? cameraForTextureHeightOverride : (int) (cameraForTexture.pixelHeight);
-
-				cameraForTexture.enabled = false;
-				cameraTexture = new RenderTexture(width, height, 24);
-
-				if(highQualityRenderTex)
-				{
-					cameraTexture.antiAliasing = 8;
-					cameraTexture.filterMode = FilterMode.Trilinear;
-				}
-
+			if(dontForceRenderTexture)
+			{	
 				cameraForTexture.targetTexture = cameraTexture;
-				overlayTexture = cameraTexture;
+				cameraForTexture.Render();
+				cameraForTexture.targetTexture = null;
+
+				if(!cameraForTexture.enabled)
+					cameraForTexture.enabled = true;
+			}
+			else
+			{
+				if(cameraForTexture.targetTexture != cameraTexture)
+					cameraForTexture.targetTexture = cameraTexture;
+
+				if(cameraForTexture.enabled)
+					cameraForTexture.enabled = false;
+				
+				cameraForTexture.Render();
 			}
 		}
-
-		var meshF = GetComponent<MeshFilter>();
-		var meshR = GetComponent<MeshRenderer>();
-
-		if(meshF == null)
-			meshF = gameObject.AddComponent<MeshFilter>();
 		
-		var mesh = new Mesh();
-
-		float rAspect = 1f;
+		overlay.overlayWidthInMeters = widthInMeters;
+		overlay.overlayTextureBounds = textureBounds;
+		overlay.overlayMouseScale = mouseScale_t;
+		
+		if(overlayTexture)
+			reverseAspect = (float) overlayTexture.height / (float) overlayTexture.width;
+		else
+			reverseAspect = 1;
 
 		if(overlayTexture)
-			rAspect = ((float) overlayTexture.height / (float) overlayTexture.width);
+			overlay.overlayTexture = overlayTexture;
 
-		float nX = (-0.5f * widthInMeters),
-				pX = (0.5f * widthInMeters),
-				nY = (-0.5f * widthInMeters) * rAspect,
-				pY = (0.5f * widthInMeters) * rAspect;
-
-		Vector3[] verts = new Vector3[]
-		{
-			new Vector3(nX, pY, 0),
-			new Vector3(pX, pY, 0),
-			new Vector3(pX, nY, 0),
-			new Vector3(nX, nY, 0)
-		};
-
-		int[] tris = new int[] 
-		{
-			0, 1, 2,
-			0, 2, 3
-		};
-
-		Vector2 [] uvs = new Vector2[] 
-		{
-			new Vector2(0, 1),
-			new Vector2(1, 1),
-			new Vector2(1, 0),
-			new Vector2(0, 0)
-		};
-
-		mesh.vertices = verts;
-		mesh.triangles = tris;
-		mesh.uv = uvs;
-
-		mesh.RecalculateNormals();
-
-		meshF.mesh = mesh;
-		
-		if(meshR == null)
-		{
-			meshR = gameObject.AddComponent<MeshRenderer>();
-
-			var mat = new Material(Shader.Find("Diffuse"));
-
-			if(overlayTexture)
-				mat.mainTexture = overlayTexture;
-
-			meshR.sharedMaterial = mat;
-		}
-			
-		if(cameraForTexture)
-			cameraForTexture.Render();
+		mouseScale.y = mouseScale_t.v1 = reverseAspect;
 	}
 
-	void RemoveEditorSimulator()
+	void UpdateOverlayThumbnail()
 	{
-		var meshF = GetComponent<MeshFilter>();
-		var meshR = GetComponent<MeshRenderer>();
-
-		if(meshF)
-			DestroyImmediate(meshF);
-		
-		if(meshR)
-			DestroyImmediate(meshR);
+		if(isDashboardOverlay && dashboardThumbnailTexture)
+		{
+			overlay.overlayThumbnailTextureBounds = textureBounds;
+			overlay.overlayThumbnailTexture = dashboardThumbnailTexture;
+		}
 	}
 
 	void UpdateMouse()
@@ -578,58 +523,7 @@ public class Unity_Overlay : MonoBehaviour
 		}
 	}
 
-	void UpdateTexture()
-	{
-		if(!overlay.created)
-			return;
-
-		if(cameraForTexture)
-		{
-			if(dontForceRenderTexture)
-			{	
-				cameraForTexture.targetTexture = cameraTexture;
-				cameraForTexture.Render();
-				cameraForTexture.targetTexture = null;
-
-				if(!cameraForTexture.enabled)
-					cameraForTexture.enabled = true;
-			}
-			else
-			{
-				if(cameraForTexture.targetTexture != cameraTexture)
-					cameraForTexture.targetTexture = cameraTexture;
-
-				if(cameraForTexture.enabled)
-					cameraForTexture.enabled = false;
-				
-				cameraForTexture.Render();
-			}
-		}
-
-		if(!overlayTexture)
-			return;
-
-		DrawOverlayThumbnail();
-		
-		overlay.overlayWidthInMeters = widthInMeters;
-		overlay.overlayTextureBounds = textureBounds;
-		overlay.overlayMouseScale = mouseScale_t;
-
-		reverseAspect = (float) overlayTexture.height / (float) overlayTexture.width;
-		mouseScale.y = mouseScale_t.v1 = reverseAspect;
-
-		overlay.overlayTexture = overlayTexture;
-	}
-
-	void DrawOverlayThumbnail()
-	{
-		if(isDashboardOverlay && thumbnailTexture)
-		{
-			overlay.overlayThumbnailTextureBounds = textureBounds;
-			overlay.overlayThumbnailTexture = thumbnailTexture;
-		}
-	}
-
+	
 	void UpdateOpts()
 	{
 		if(opts.pos != transform.position || opts.rot != transform.rotation)
@@ -744,6 +638,34 @@ public class Unity_Overlay : MonoBehaviour
 			overlay.overlayMouseScale = mouseScale_t;
 			opts.mouseScale = mouseScale;
 		}
+
+		if(opts.enableRenderModel != enableRenderModel) 
+		{
+			opts.enableRenderModel = enableRenderModel;
+		}
+
+		if(opts.enableRenderModel)
+		{
+			if(opts.renderModelPath != renderModelPath)
+			{
+				overlay.overlayRenderModel = renderModelPath;
+				opts.renderModelPath = renderModelPath;
+			}
+		} 
+		else
+		{
+			if(opts.renderModelPath != "")
+			{
+				overlay.overlayRenderModel = "";
+				opts.renderModelPath = "";
+			}
+		}
+
+		if(opts.renderModelColor != renderModelColor)
+		{
+			overlay.overlayRenderModelColor = renderModelColor;
+			opts.renderModelColor = renderModelColor;
+		}
 	}
 
 	public Color GetChaperoneColor()
@@ -769,6 +691,106 @@ public class Unity_Overlay : MonoBehaviour
 
 		return ret;
 	}
+
+	
+	void UpdateEditorSimulator()
+	{
+		if(cameraForTexture != null)
+		{
+			if(overlayTexture == null)
+			{
+				int width = cameraForTextureWidthOverride != 0 ? cameraForTextureWidthOverride : (int) (cameraForTexture.pixelWidth);
+				int height = cameraForTextureHeightOverride != 0 ? cameraForTextureHeightOverride : (int) (cameraForTexture.pixelHeight);
+
+				cameraForTexture.enabled = false;
+				cameraTexture = new RenderTexture(width, height, 24);
+
+				if(highQualityRenderTex)
+				{
+					cameraTexture.antiAliasing = 8;
+					cameraTexture.filterMode = FilterMode.Trilinear;
+				}
+
+				cameraForTexture.targetTexture = cameraTexture;
+				overlayTexture = cameraTexture;
+			}
+		}
+
+		var meshF = GetComponent<MeshFilter>();
+		var meshR = GetComponent<MeshRenderer>();
+
+		if(meshF == null)
+			meshF = gameObject.AddComponent<MeshFilter>();
+		
+		var mesh = new Mesh();
+
+		float rAspect = 1f;
+
+		if(overlayTexture)
+			rAspect = ((float) overlayTexture.height / (float) overlayTexture.width);
+
+		float nX = (-0.5f * widthInMeters),
+				pX = (0.5f * widthInMeters),
+				nY = (-0.5f * widthInMeters) * rAspect,
+				pY = (0.5f * widthInMeters) * rAspect;
+
+		Vector3[] verts = new Vector3[]
+		{
+			new Vector3(nX, pY, 0),
+			new Vector3(pX, pY, 0),
+			new Vector3(pX, nY, 0),
+			new Vector3(nX, nY, 0)
+		};
+
+		int[] tris = new int[] 
+		{
+			0, 1, 2,
+			0, 2, 3
+		};
+
+		Vector2 [] uvs = new Vector2[] 
+		{
+			new Vector2(0, 1),
+			new Vector2(1, 1),
+			new Vector2(1, 0),
+			new Vector2(0, 0)
+		};
+
+		mesh.vertices = verts;
+		mesh.triangles = tris;
+		mesh.uv = uvs;
+
+		mesh.RecalculateNormals();
+
+		meshF.mesh = mesh;
+		
+		if(meshR == null)
+		{
+			meshR = gameObject.AddComponent<MeshRenderer>();
+
+			var mat = new Material(Shader.Find("Diffuse"));
+
+			if(overlayTexture)
+				mat.mainTexture = overlayTexture;
+
+			meshR.sharedMaterial = mat;
+		}
+			
+		if(cameraForTexture)
+			cameraForTexture.Render();
+	}
+
+	void RemoveEditorSimulator()
+	{
+		var meshF = GetComponent<MeshFilter>();
+		var meshR = GetComponent<MeshRenderer>();
+
+		if(meshF)
+			DestroyImmediate(meshF);
+		
+		if(meshR)
+			DestroyImmediate(meshR);
+	}
 }
 
 public struct Unity_Overlay_Opts 
@@ -791,6 +813,14 @@ public struct Unity_Overlay_Opts
 
 	public bool enableSimulatedMouse;
 	public Vector2 mouseScale;
+
+	public bool useChapColor;
+	public Color lastChapColor;
+
+
+	public bool enableRenderModel;
+	public string renderModelPath;
+	public Color renderModelColor;
 	
 }
 

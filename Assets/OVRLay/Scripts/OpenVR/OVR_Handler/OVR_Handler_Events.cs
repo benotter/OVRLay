@@ -51,10 +51,8 @@ public partial class OVR_Handler
             case EVREventType.VREvent_ChaperoneSettingsHaveChanged:
                 onChaperoneChange();
             break;
-
-            default:
-                Debug.Log("OVR_Handler Event: " + type);        
-            break;
         }
+
+        onVREvent.Invoke(pEvent);
     }
 }

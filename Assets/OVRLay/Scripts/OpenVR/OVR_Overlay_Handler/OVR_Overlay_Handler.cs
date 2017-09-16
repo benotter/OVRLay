@@ -19,6 +19,14 @@ public class OVR_Overlay_Handler
 
     private HashSet<OVR_Overlay> overlays = new HashSet<OVR_Overlay>();
 
+    public void VRShutdown()
+    {
+        foreach(OVR_Overlay overlay in overlays)
+            overlay.VRShutdown();
+
+        DestroyAllOverlays();
+    }
+
     public void UpdateOverlays()
     {
         foreach(OVR_Overlay overlay in overlays)

@@ -4,6 +4,16 @@ using Valve.VR;
 
 public partial class OVR_Handler : System.IDisposable
 {
+    public delegate void VREventHandler(VREvent_t e);
+
+    public VREventHandler onVREvent;
+    private void DefaultEventHandler(VREvent_t e){}
+
+    public OVR_Handler() 
+    {
+        onVREvent += DefaultEventHandler;
+    }
+
     public void UpdateAll()
     {
         while(PollNextEvent(ref pEvent))
@@ -28,7 +38,7 @@ public partial class OVR_Handler : System.IDisposable
             onOpenVRChange.Invoke(true);
         }
         else
-            ShutDownOpenVR(); // GetOpenVRInterfaces();
+            ShutDownOpenVR();
 
         return result;
     }
@@ -45,6 +55,8 @@ public partial class OVR_Handler : System.IDisposable
 
     public bool ShutDownOpenVR()
     {
+        overlayHandler.VRShutdown();
+
         _VRSystem = null;
 
         _Compositor = null;
@@ -55,10 +67,9 @@ public partial class OVR_Handler : System.IDisposable
         _Applications = null;
         _RenderModels = null;
 
-        overlayHandler.DestroyAllOverlays();
         OpenVR.Shutdown();
 
-        return false;
+        return true;
     }
 
     private bool ErrorCheck(EVRInitError error)
