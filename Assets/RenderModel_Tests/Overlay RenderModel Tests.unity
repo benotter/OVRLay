@@ -175,7 +175,88 @@ Material:
     m_Floats: []
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
---- !u!43 &983815387
+--- !u!1001 &1066951655
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1788968067}
+    m_Modifications:
+    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1948261899652042, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
+      propertyPath: m_Name
+      value: Unity_Overlay In Game
+      objectReference: {fileID: 0}
+    - target: {fileID: 23329836617750994, guid: fd42ae69af8a708458be19b5a132b4a9,
+        type: 2}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 755600056}
+    - target: {fileID: 33002279350541476, guid: fd42ae69af8a708458be19b5a132b4a9,
+        type: 2}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 1333080849}
+    - target: {fileID: 114333705838659940, guid: fd42ae69af8a708458be19b5a132b4a9,
+        type: 2}
+      propertyPath: onlyShowInDashboard
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114333705838659940, guid: fd42ae69af8a708458be19b5a132b4a9,
+        type: 2}
+      propertyPath: renderModelPath
+      value: C:\Users\benot\Documents\Unity Projects\OVRLay\Assets\RenderModel_Tests\test_obj\test_obj.obj
+      objectReference: {fileID: 0}
+    - target: {fileID: 114333705838659940, guid: fd42ae69af8a708458be19b5a132b4a9,
+        type: 2}
+      propertyPath: enableRenderModel
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114333705838659940, guid: fd42ae69af8a708458be19b5a132b4a9,
+        type: 2}
+      propertyPath: overlayKey
+      value: unity_example
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
+  m_IsPrefabParent: 0
+--- !u!4 &1066951656 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9,
+    type: 2}
+  m_PrefabInternal: {fileID: 1066951655}
+--- !u!43 &1333080849
 Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -303,82 +384,6 @@ Mesh:
   m_BakedConvexCollisionMesh: 
   m_BakedTriangleCollisionMesh: 
   m_MeshOptimized: 0
---- !u!1001 &1066951655
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1788968067}
-    m_Modifications:
-    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1948261899652042, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
-      propertyPath: m_Name
-      value: Unity_Overlay In Game
-      objectReference: {fileID: 0}
-    - target: {fileID: 23329836617750994, guid: fd42ae69af8a708458be19b5a132b4a9,
-        type: 2}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 755600056}
-    - target: {fileID: 33002279350541476, guid: fd42ae69af8a708458be19b5a132b4a9,
-        type: 2}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 983815387}
-    - target: {fileID: 114333705838659940, guid: fd42ae69af8a708458be19b5a132b4a9,
-        type: 2}
-      propertyPath: onlyShowInDashboard
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114333705838659940, guid: fd42ae69af8a708458be19b5a132b4a9,
-        type: 2}
-      propertyPath: renderModelPath
-      value: C:\Users\benot\Documents\Unity Projects\OVRLay\Assets\RenderModel_Tests\test_obj\test_obj.obj
-      objectReference: {fileID: 0}
-    - target: {fileID: 114333705838659940, guid: fd42ae69af8a708458be19b5a132b4a9,
-        type: 2}
-      propertyPath: enableRenderModel
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: fd42ae69af8a708458be19b5a132b4a9, type: 2}
-  m_IsPrefabParent: 0
---- !u!4 &1066951656 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4880528273576866, guid: fd42ae69af8a708458be19b5a132b4a9,
-    type: 2}
-  m_PrefabInternal: {fileID: 1066951655}
 --- !u!1 &1788968066
 GameObject:
   m_ObjectHideFlags: 0

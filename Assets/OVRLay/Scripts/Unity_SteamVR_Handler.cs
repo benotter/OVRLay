@@ -25,14 +25,21 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 
 	public bool debugLog = false;
 
+	[Space(10)]
+
 	public UnityEvent onSteamVRConnect = new UnityEvent();
 	public UnityEvent onSteamVRDisconnect = new UnityEvent();
 
+	[Space(10)]
 
-	public OVR_Handler ovrHandler = OVR_Handler.instance;
+	public UnityEvent onDashboardOpen = new UnityEvent();
+	public UnityEvent onDashboardClose = new UnityEvent();
 
-	public OVR_Overlay_Handler overlayHandler { get { return ovrHandler.overlayHandler; } }
-	public OVR_Pose_Handler poseHandler { get { return ovrHandler.poseHandler; } }
+
+	[HideInInspector] public OVR_Handler ovrHandler = OVR_Handler.instance;
+
+	[HideInInspector] public OVR_Overlay_Handler overlayHandler { get { return ovrHandler.overlayHandler; } }
+	[HideInInspector] public OVR_Pose_Handler poseHandler { get { return ovrHandler.poseHandler; } }
 
 	private float lastSteamVRPollTime = 0f;
 
@@ -58,6 +65,15 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 		}
 			
 	}
+
+	void OnDashboardChange(bool open)
+	{
+		if(open)
+			onDashboardOpen.Invoke();
+		else
+			onDashboardClose.Invoke();
+	}
+
 	void Update() 
 	{
 		if(autoUpdate)
@@ -126,6 +142,7 @@ public class Unity_SteamVR_Handler : MonoBehaviour
 				Debug.Log("Connected to SteamVR!");
 				
 				onSteamVRConnect.Invoke();
+				ovrHandler.onDashboardChange += OnDashboardChange;
 
 				return true;
 			}		

@@ -320,6 +320,10 @@ public class Unity_Overlay : MonoBehaviour
 				Debug.Log("Failed to create overlay!");
 				return;
 			}
+			else
+			{
+				Debug.Log("Overlay Created!");
+			}
 
 			isDashboardOpen = ovrHandler.Overlay.IsDashboardVisible();
 		}	
@@ -335,19 +339,12 @@ public class Unity_Overlay : MonoBehaviour
 				isVisible = true;
 		}
 
+		UpdateOpts();
+
 		if(!enabled)
 			return;
 
-		UpdateOpts();
 		UpdateOverlayThumbnail();
-
-		if(enableSimulatedMouse)
-		{
-			UpdateMouse();
-
-			if(simulateUnityMouseInput)
-				UpdateUnityMouseSim();
-		}
 
 		if(useChaperoneColor)
 		{
@@ -365,6 +362,14 @@ public class Unity_Overlay : MonoBehaviour
 		}
 
 		UpdateTexture();
+
+		if(enableSimulatedMouse)
+		{
+			UpdateMouse();
+
+			if(simulateUnityMouseInput)
+				UpdateUnityMouseSim();
+		}
 	}
 
 	void UpdateTexture()
